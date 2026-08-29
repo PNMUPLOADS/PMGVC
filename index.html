@@ -1,11 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-
-  <meta charset="utf-8">
+<meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gold Valuation Calculator</title>
   <style>
@@ -31,7 +27,7 @@ th:first-child{border-radius:11px 0 0 0}th:last-child{border-radius:0 11px 0 0}
 td{padding:5px;background:#fff;border-bottom:1px solid var(--line);text-align:center}
 input{font-family:inherit}
 .tableInput,.currencyInput input,.roiInput{width:100%;border:1px solid #d8d1bb;border-radius:9px;background:#fcfcfa;outline:none;color:var(--ink);font-weight:700}
-.tableInput{height:34px;padding:5px 7px;text-align:right}
+.tableInput{height:34px;padding:5px 7px;text-align:center}
 .tableInput:focus,.currencyInput:focus-within,.percentInput:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.12)}
 .calc{font-weight:800;font-size:13px}.k22{color:#07934b}.k18{color:#009bc5}
 .summaryRow{display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);gap:10px;margin-top:8px;align-items:center}
@@ -78,12 +74,12 @@ input{font-family:inherit}
   body{padding:5px}.hero{padding:11px 7px;border-radius:14px}.hero h1{font-size:17px;letter-spacing:.025em}
   .panel{padding:4px;margin-top:6px}.tableWrap{overflow:visible}
   th{padding:6px 2px;font-size:8px;line-height:1.1;word-break:break-word}td{padding:2px 1px}.tableInput{height:31px;padding:4px 2px;font-size:10px}.calc{font-size:9px}
-  .summaryRow{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px}.bank,.total{padding:6px;font-size:9px}.bank{gap:4px}.bank strong{font-size:8px}.currencyInput{height:29px;padding:0 5px}.bank .currencyInput input{font-size:9px;width:75px}.total strong{font-size:14px}
+  .summaryRow{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px}.bank,.total{padding:6px;font-size:9px}.bank{gap:4px}.bank strong{font-size:13px}.currencyInput{height:29px;padding:0 5px}.bank .currencyInput input{font-size:9px;width:75px}.total strong{font-size:14px}
   .scheme{padding:6px;border-radius:13px}.schemeTitle{font-size:12px;padding:4px 2px 5px}.cards{gap:4px}.card{padding:5px}.card h2{font-size:8px;margin-bottom:4px}.amount{min-height:39px;font-size:13px;margin-bottom:4px}.rateBlock label{font-size:6px}.readonlyCurrency{height:25px;padding:0 4px;font-size:8px}
   .roiArea{margin-top:5px;padding-top:4px}.eligibleRow{gap:4px;margin-bottom:5px}.eligibleRow label{font-size:7px}.eligibleRow .currencyInput{height:25px}.roiRow{grid-template-columns:25px minmax(0,1fr);gap:4px}.roiRow h3{font-size:8px}.roiGrid{gap:4px}.roiBox{padding:4px}.roiTop{gap:3px}.percentInput{width:54px;padding-right:3px}.roiInput{font-size:11px;padding:2px}.percentInput span{font-size:9px}.roiTop>span{font-size:10px}.roiBox>label{font-size:6px}.monthlyRate{width:52px;padding:3px;font-size:7px}.interestAmount{margin-top:3px}.interestAmount label{font-size:6px}.interestAmount .readonlyCurrency{height:23px}
 }
 @media(max-width:380px){
-  th{font-size:7px}.tableInput{font-size:9px}.calc{font-size:8px}.summaryRow{gap:3px}.bank,.total{padding:5px;font-size:8px}.bank strong{font-size:7px}.bank .currencyInput input{width:60px}.total strong{font-size:12px}.schemeTitle{font-size:10px}.card{padding:4px}.card h2{font-size:7px}.amount{font-size:11px;min-height:34px}.roiRow{grid-template-columns:22px minmax(0,1fr)}.roiRow h3{font-size:7px}.percentInput{width:48px}.roiTop>span{font-size:9px}.roiBox>label,.interestAmount label{font-size:5.5px}.monthlyRate{width:45px;font-size:6px}
+  th{font-size:7px}.tableInput{font-size:9px}.calc{font-size:8px}.summaryRow{gap:3px}.bank,.total{padding:5px;font-size:8px}.bank strong{font-size:13px}.bank .currencyInput input{width:60px}.total strong{font-size:12px}.schemeTitle{font-size:10px}.card{padding:4px}.card h2{font-size:7px}.amount{font-size:11px;min-height:34px}.roiRow{grid-template-columns:22px minmax(0,1fr)}.roiRow h3{font-size:7px}.percentInput{width:48px}.roiTop>span{font-size:9px}.roiBox>label,.interestAmount label{font-size:5.5px}.monthlyRate{width:45px;font-size:6px}
 }
 
 
@@ -154,7 +150,7 @@ table td{
   font-size:clamp(11px,1vw,14px);
 }
 @media(max-width:700px){
-  .bank > strong{font-size:10px !important}
+  .bank > strong{font-size:13px !important}
   .bank .currencyInput input{font-size:17px !important}
   .bank > span{font-size:9px}
 }
@@ -449,7 +445,7 @@ table td{
     grid-template-columns:auto minmax(65px,1fr) auto;
     gap:2px;
   }
-  .valuationTopControls .bank > strong{font-size:6px !important}
+  .valuationTopControls .bank > strong{font-size:13px !important}
   .valuationTopControls .bank .currencyInput input{font-size:10px !important}
   .valuationTopControls .bank > span{font-size:6px !important}
 }
@@ -505,7 +501,7 @@ table td{
     font-size:14px;
   }
   .valuationTopControls .bank > strong{
-    font-size:10px !important;
+    font-size:13px !important;
   }
   .valuationTopControls .bank > span{
     font-size:9px !important;
@@ -702,57 +698,15 @@ table td{
 }
 
 
-/* ROI title inside the ROI table, beside the result boxes — layout only */
+/* ROI row — no separate non-editable ROI label */
 .roiRow{
-  display:grid !important;
-  grid-template-columns:70px minmax(0,1fr) !important;
-  gap:8px !important;
-  align-items:stretch !important;
-  padding:6px !important;
-  border:1px solid rgba(50,62,54,.14);
-  border-radius:11px;
-  background:rgba(255,255,255,.45);
+  display:block !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
 }
-.roiRow h3{
-  margin:0 !important;
-  min-height:100%;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  border:1px solid #d4c89f;
-  border-radius:9px;
-  background:linear-gradient(145deg,#fffdf2,#f0e6c2);
-  color:#70570b;
-  font-size:12px !important;
-  letter-spacing:.1em;
-  text-align:center;
-}
-.roiGrid{
-  min-width:0;
-}
-.retail .roiRow h3{
-  border-color:#d7a2a2;
-  background:linear-gradient(145deg,#fff8f8,#f1dddd);
-  color:#8b2222;
-}
-@media(max-width:700px){
-  .roiRow{
-    grid-template-columns:42px minmax(0,1fr) !important;
-    gap:4px !important;
-    padding:4px !important;
-  }
-  .roiRow h3{
-    font-size:8px !important;
-  }
-}
-@media(max-width:380px){
-  .roiRow{
-    grid-template-columns:35px minmax(0,1fr) !important;
-  }
-  .roiRow h3{
-    font-size:7px !important;
-  }
-}
+.roiGrid{min-width:0;}
 
 
 /* Common "After Deduction (g)" header — layout only */
@@ -1075,6 +1029,19 @@ td.calc18{
 
 /* Center-align all editable text inside the valuation table */
 .valuation-table input, .valuation-table textarea, .valuation-table select { text-align: center; }
+
+/* Keep Agriculture and Retail scheme text the same size; scheme titles remain unchanged */
+.agriculture .schemeContent, .retail .schemeContent{font-size:14px;}
+.agriculture .schemeContent .card h2, .retail .schemeContent .card h2{font-size:10px !important;}
+.agriculture .schemeContent .rateBlock label, .retail .schemeContent .rateBlock label,
+.agriculture .schemeContent .eligibleRow label, .retail .schemeContent .eligibleRow label,
+.agriculture .schemeContent .interestAmount label, .retail .schemeContent .interestAmount label,
+.agriculture .schemeContent .roiBox label, .retail .schemeContent .roiBox label{font-size:14px;}
+.agriculture .schemeContent .roiTop > span, .retail .schemeContent .roiTop > span{font-size:10px !important;}
+.agriculture .schemeContent .amount, .retail .schemeContent .amount{font-size:14px;}
+.agriculture .schemeContent input, .retail .schemeContent input{font-size:14px;}
+
+.roiLabel{font-size:10px !important;white-space:nowrap;color:#4c574e;font-weight:800}
 </style>
 
 <style>
@@ -1149,6 +1116,13 @@ td.calc18{
 .gross-weight input:not([readonly]):not([disabled]),
 #grossWeight input:not([readonly]):not([disabled]),
 .grossWeight input:not([readonly]):not([disabled]) { text-align: center !important; }
+</style>
+
+<style>
+.rateBlock label { font-size: 11px !important; }
+</style>
+<style>
+  .interestAmount label, label[for*="interestAmount"] { font-size: 10px !important; }
 </style>
 </head>
 <body>
@@ -1331,7 +1305,7 @@ td.calc18{
     <div class="schemeContent">
       <div class="cards three">
         <article class="card">
-          <h2>VALUE @ 75%</h2>
+          <h2>ELIGIBLE AMOUNT @ 75%</h2>
           <div class="amount green" id="agri75">₹0</div>
           <div class="rateBlock">
             <label for="agri75Rate">Rate Per Gram</label>
@@ -1340,7 +1314,7 @@ td.calc18{
         </article>
 
         <article class="card">
-          <h2>VALUE @ 80%</h2>
+          <h2>ELIGIBLE AMOUNT @ 80%</h2>
           <div class="amount green" id="agri80">₹0</div>
           <div class="rateBlock">
             <label for="agri80Rate">Rate Per Gram</label>
@@ -1349,7 +1323,7 @@ td.calc18{
         </article>
 
         <article class="card">
-          <h2>VALUE @ 85%</h2>
+          <h2>ELIGIBLE AMOUNT @ 85%</h2>
           <div class="amount green" id="agri85">₹0</div>
           <div class="rateBlock">
             <label for="agri85Rate">Rate Per Gram</label>
@@ -1360,20 +1334,19 @@ td.calc18{
 
       <div class="roiArea">
         <div class="eligibleRow">
-          <label for="agriEligible">Eligible Amount</label>
-          <div class="currencyInput"><span>₹</span><input id="agriEligible" type="text" min="0" step="1" placeholder="0" inputmode="decimal" aria-label="Agriculture Eligible Amount"></div>
+          <label for="agriEligible">Final Eligible Amount</label>
+          <div class="currencyInput"><span>₹</span><input id="agriEligible" type="text" min="0" step="1" placeholder="0" inputmode="decimal" aria-label="Agriculture Final Eligible Amount"></div>
         </div>
 
         <div class="roiRow">
-          <h3>ROI</h3>
           <div class="roiGrid">
             <div class="roiBox">
-              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Agriculture ROI up to 2.5 L"><span>%</span></div><span>Up to 2.5 L</span></div>
+              <div class="roiTop"><span class="roiLabel">ROI</span><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Agriculture ROI up to 2.5 L"><span>%</span></div><span>Up to 2.5 L</span></div>
               <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
               <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
             </div>
             <div class="roiBox">
-              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Agriculture ROI above 2.5 L"><span>%</span></div><span>Above 2.5 L</span></div>
+              <div class="roiTop"><span class="roiLabel">ROI</span><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Agriculture ROI above 2.5 L"><span>%</span></div><span>Above 2.5 L</span></div>
               <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
               <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
             </div>
@@ -1389,7 +1362,7 @@ td.calc18{
     <div class="schemeContent">
       <div class="cards two">
         <article class="card">
-          <h2>VALUE @ 65%</h2>
+          <h2>ELIGIBLE AMOUNT @ 65%</h2>
           <div class="amount red" id="retail65">₹0</div>
           <div class="rateBlock">
             <label for="retail65Rate">Rate Per Gram</label>
@@ -1398,7 +1371,7 @@ td.calc18{
         </article>
 
         <article class="card">
-          <h2>VALUE @ 68%</h2>
+          <h2>ELIGIBLE AMOUNT @ 68%</h2>
           <div class="amount red" id="retail68">₹0</div>
           <div class="rateBlock">
             <label for="retail68Rate">Rate Per Gram</label>
@@ -1409,20 +1382,19 @@ td.calc18{
 
       <div class="roiArea">
         <div class="eligibleRow">
-          <label for="retailEligible">Eligible Amount</label>
-          <div class="currencyInput"><span>₹</span><input id="retailEligible" type="text" min="0" step="1" placeholder="0" inputmode="decimal" aria-label="Retail Eligible Amount"></div>
+          <label for="retailEligible">Final Eligible Amount</label>
+          <div class="currencyInput"><span>₹</span><input id="retailEligible" type="text" min="0" step="1" placeholder="0" inputmode="decimal" aria-label="Retail Final Eligible Amount"></div>
         </div>
 
         <div class="roiRow">
-          <h3>ROI</h3>
           <div class="roiGrid">
             <div class="roiBox">
-              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Retail ROI up to 10 L"><span>%</span></div><span>Up to 10 L</span></div>
+              <div class="roiTop"><span class="roiLabel">ROI</span><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Retail ROI up to 10 L"><span>%</span></div><span>Up to 10 L</span></div>
               <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
               <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
             </div>
             <div class="roiBox">
-              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Retail ROI above 10 L"><span>%</span></div><span>Above 10 L</span></div>
+              <div class="roiTop"><span class="roiLabel">ROI</span><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Retail ROI above 10 L"><span>%</span></div><span>Above 10 L</span></div>
               <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
               <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
             </div>
@@ -1652,11 +1624,27 @@ window.addEventListener('appinstalled', () => {
 });
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/PMGVC/service-worker.js', {scope: '/PMGVC/'}).catch(() => {});
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('/PMGVC/service-worker.js', {scope: '/PMGVC/'});
+      await registration.update();
+    } catch (e) {}
   });
 }
 </script>
 
+
+<style>
+/* TOTAL NET WEIGHT — equal text size for label and result */
+.tableTotalCell .total span,
+.tableTotalCell .total strong{
+  font-size:16px !important;
+}
+</style>
 </body>
 </html>
+
+<style>
+/* Eligible Amount headings */
+.agriculture .schemeContent .card h2, .retail .schemeContent .card h2 { font-size:10px !important; }
+</style>
