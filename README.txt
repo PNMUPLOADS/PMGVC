@@ -1,15 +1,19 @@
-# Gold Valuation Calculator — PWA
+PMGVC PWA — GitHub Pages
 
-Files:
-- index.html — calculator app
-- manifest.webmanifest — PWA manifest
-- service-worker.js — offline cache/service worker
-- icons/ — app icons
-- gold-calculator-logo.jpg — supplied logo image
+IMPORTANT: Upload the CONTENTS of this folder directly into the root of the PMGVC GitHub repository.
+Do NOT upload the PMGVC_PWA_FINAL folder itself.
 
-To install:
-1. Serve this folder from HTTPS (or localhost).
-2. Open index.html in a browser.
-3. Use the browser's "Install app" / "Add to Home Screen" option.
+Required root files:
+index.html
+manifest.json
+service-worker.js
+icon-192.png
+icon-512.png
+favicon-32.png
+gold-calculator-logo.jpg
 
-The calculator itself has no backend dependency and the PWA shell is cached for offline use after the first successful load.
+After GitHub Pages deploys:
+1. Open https://pnmuploads.github.io/PMGVC/
+2. In Chrome, reload the page.
+3. If an older PMGVC app was installed, remove it first.
+4. Chrome Android may label the menu item "Install and create shortcut"; tap Install.

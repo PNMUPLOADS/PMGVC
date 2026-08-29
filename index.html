@@ -1064,8 +1064,8 @@ td.calc18{
   <meta name="background-color" content="#f2eee4">
   <meta name="description" content="Gold Valuation Calculator for gold weight, valuation, schemes, ROI and monthly interest.">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 
 
 <style>
@@ -1592,7 +1592,7 @@ window.addEventListener('appinstalled', () => {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js', {scope: './'}).catch(() => {});
+    navigator.serviceWorker.register('/PMGVC/service-worker.js', {scope: '/PMGVC/'}).catch(() => {});
   });
 }
 </script>
