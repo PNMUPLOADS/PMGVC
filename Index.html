@@ -1,0 +1,1680 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gold Valuation Calculator</title>
+  <style>
+/* Offline PWA: use local/system fonts; no network font dependency. */
+
+:root{
+  --ink:#182019;--muted:#687168;--gold:#c9a227;--gold2:#8d6d13;
+  --burgundy:#681d28;--burgundy2:#3e0d15;--green:#08a957;--red:#c52222;
+  --line:#e3dfd2;--shadow:0 14px 35px rgba(37,31,13,.09)
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"DM Sans",Arial,sans-serif;color:var(--ink)}
+body{padding:14px;background:radial-gradient(circle at 8% 0%,rgba(222,190,78,.18),transparent 28%),linear-gradient(180deg,#fcfbf8,#f2eee4);overflow-x:hidden}
+.app{width:min(1500px,100%);margin:auto}
+.hero{padding:18px 20px;text-align:center;border:1px solid #d4b33e;border-radius:22px;background:linear-gradient(135deg,#fffef9,#f4ecd3,#fffdf3);box-shadow:var(--shadow)}
+.hero h1{margin:0;font-size:clamp(23px,3.1vw,40px);line-height:1.15;letter-spacing:.07em}
+.hero h1 span{color:#b38b12}
+.panel{margin-top:10px;padding:9px;border:1px solid #ddd5bd;border-radius:17px;background:#fffffff0;box-shadow:var(--shadow)}
+.tableWrap{width:100%}
+table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+th{padding:9px 7px;color:#fff;font-size:11px;background:linear-gradient(135deg,var(--burgundy),var(--burgundy2));border-bottom:2px solid var(--gold)}
+th:first-child{border-radius:11px 0 0 0}th:last-child{border-radius:0 11px 0 0}
+td{padding:5px;background:#fff;border-bottom:1px solid var(--line);text-align:center}
+input{font-family:inherit}
+.tableInput,.currencyInput input,.roiInput{width:100%;border:1px solid #d8d1bb;border-radius:9px;background:#fcfcfa;outline:none;color:var(--ink);font-weight:700}
+.tableInput{height:34px;padding:5px 7px;text-align:center}
+.tableInput:focus,.currencyInput:focus-within,.percentInput:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.12)}
+.calc{font-weight:800;font-size:13px}.k22{color:#07934b}.k18{color:#009bc5}
+.summaryRow{display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);gap:10px;margin-top:8px;align-items:center}
+.bank,.total{height:100%;display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:11px}
+.bank{justify-content:center;background:#fffdf5;border:1px solid #d9cfae}
+.bank strong{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#504a3b}
+.currencyInput,.readonlyCurrency{display:flex;align-items:center;gap:4px;padding:0 8px;background:#fff;border:1px solid #cfc6aa;border-radius:9px;min-width:0}
+.currencyInput{height:34px}
+.currencyInput input{height:100%;border:0!important;box-shadow:none!important;background:transparent!important;padding:6px 2px;text-align:right;min-width:0}
+.total{justify-content:space-between;background:linear-gradient(135deg,#fffdf3,#f1e8c7);border:1px solid #d4bf70;font-weight:800}
+.total strong{font-size:20px;color:#8a6910}
+.scheme{margin-top:10px;padding:10px;border-radius:18px;box-shadow:var(--shadow)}
+.agriculture{background:linear-gradient(135deg,#effaf3,#e1f2e7);border:1px solid #8fc8a7}
+.retail{background:linear-gradient(135deg,#fff0f0,#f9dfdf);border:1px solid #d88a8a}
+.schemeContent{min-width:0}
+.schemeTitle{padding:5px 4px 8px;text-align:center;border-bottom:1px solid rgba(40,50,42,.14);font-size:16px;font-weight:800;letter-spacing:.08em}
+.retail .schemeTitle{color:#7d1d1d}
+.cards{display:grid;gap:8px}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{min-width:0;padding:9px;border-radius:13px;background:#fffffff2;border:1px solid rgba(55,66,58,.12);box-shadow:0 8px 20px rgba(31,46,37,.07)}
+.agriculture .card{border-top:3px solid #1da35a}.retail .card{border-top:3px solid #b52b2b}
+.card h2{margin:0 0 6px;text-align:center;font-size:12px;letter-spacing:.07em}
+.amount{display:flex;align-items:center;justify-content:center;min-height:48px;margin-bottom:7px;border-radius:10px;background:#f6f8f4;border:1px solid #dfe3dc;font-size:clamp(20px,2.3vw,29px);font-weight:800;white-space:nowrap}
+.green{color:var(--green)}.red{color:var(--red)}
+.rateBlock{display:flex;flex-direction:column;gap:3px}.rateBlock label,.eligibleRow label,.interestAmount label{font-size:9px;font-weight:800;color:#536057}
+.readonlyCurrency{height:30px}.readonlyCurrency input{width:100%;min-width:0;border:0;outline:0;background:transparent;text-align:right;font-weight:700;color:#626a62}
+.roiArea{margin-top:8px;padding-top:7px;border-top:1px solid rgba(33,51,40,.14)}
+.eligibleRow{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.eligibleRow label{white-space:nowrap;font-size:10px}
+.eligibleRow .currencyInput{flex:1}
+.roiRow{display:grid;grid-template-columns:38px minmax(0,1fr);gap:8px;align-items:start}
+.roiRow h3{margin:5px 0 0;font-size:11px;letter-spacing:.12em;text-align:center}
+.roiGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.roiBox{min-width:0;padding:7px;border:1px solid rgba(50,62,54,.12);border-radius:10px;background:#ffffffc9}
+.roiTop{display:flex;align-items:center;gap:6px}.roiTop>span{font-size:13px;white-space:nowrap;color:#4c574e;font-weight:800}
+.percentInput{display:flex;align-items:center;width:65px;padding-right:5px;border:1px solid #d1b55c;border-radius:7px;background:#fffdf4}
+.roiInput{border:0!important;background:transparent!important;box-shadow:none!important;padding:3px 2px;text-align:right;font-size:14px}
+.percentInput span{color:#9a7500;font-weight:800;font-size:12px}
+.roiBox>label{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-top:5px;font-size:8px;color:var(--muted);font-weight:700}
+.monthlyRate{width:70px;padding:4px;border:1px solid #d3ccb9;border-radius:6px;background:#f2f3ef;text-align:right;font-size:9px;font-weight:700;color:#626a62}
+.interestAmount{margin-top:5px}.interestAmount label{display:block;margin-bottom:3px}.interestAmount .readonlyCurrency{width:100%}
+.retail .roiArea{border-top-color:rgba(125,29,29,.16)}
+.retail .roiInput{color:#9b1d1d}.retail .percentInput{border-color:#d79a9a}
+@media(max-width:700px){
+  body{padding:5px}.hero{padding:11px 7px;border-radius:14px}.hero h1{font-size:17px;letter-spacing:.025em}
+  .panel{padding:4px;margin-top:6px}.tableWrap{overflow:visible}
+  th{padding:6px 2px;font-size:8px;line-height:1.1;word-break:break-word}td{padding:2px 1px}.tableInput{height:31px;padding:4px 2px;font-size:10px}.calc{font-size:9px}
+  .summaryRow{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px}.bank,.total{padding:6px;font-size:9px}.bank{gap:4px}.bank strong{font-size:8px}.currencyInput{height:29px;padding:0 5px}.bank .currencyInput input{font-size:9px;width:75px}.total strong{font-size:14px}
+  .scheme{padding:6px;border-radius:13px}.schemeTitle{font-size:12px;padding:4px 2px 5px}.cards{gap:4px}.card{padding:5px}.card h2{font-size:8px;margin-bottom:4px}.amount{min-height:39px;font-size:13px;margin-bottom:4px}.rateBlock label{font-size:6px}.readonlyCurrency{height:25px;padding:0 4px;font-size:8px}
+  .roiArea{margin-top:5px;padding-top:4px}.eligibleRow{gap:4px;margin-bottom:5px}.eligibleRow label{font-size:7px}.eligibleRow .currencyInput{height:25px}.roiRow{grid-template-columns:25px minmax(0,1fr);gap:4px}.roiRow h3{font-size:8px}.roiGrid{gap:4px}.roiBox{padding:4px}.roiTop{gap:3px}.percentInput{width:54px;padding-right:3px}.roiInput{font-size:11px;padding:2px}.percentInput span{font-size:9px}.roiTop>span{font-size:10px}.roiBox>label{font-size:6px}.monthlyRate{width:52px;padding:3px;font-size:7px}.interestAmount{margin-top:3px}.interestAmount label{font-size:6px}.interestAmount .readonlyCurrency{height:23px}
+}
+@media(max-width:380px){
+  th{font-size:7px}.tableInput{font-size:9px}.calc{font-size:8px}.summaryRow{gap:3px}.bank,.total{padding:5px;font-size:8px}.bank strong{font-size:7px}.bank .currencyInput input{width:60px}.total strong{font-size:12px}.schemeTitle{font-size:10px}.card{padding:4px}.card h2{font-size:7px}.amount{font-size:11px;min-height:34px}.roiRow{grid-template-columns:22px minmax(0,1fr)}.roiRow h3{font-size:7px}.percentInput{width:48px}.roiTop>span{font-size:9px}.roiBox>label,.interestAmount label{font-size:5.5px}.monthlyRate{width:45px;font-size:6px}
+}
+
+
+/* Latest visual adjustments only */
+table th,
+table td{
+  text-align:center !important;
+  vertical-align:middle !important;
+}
+
+.bank .currencyInput input{
+  font-size:clamp(16px,1.8vw,22px) !important;
+  font-weight:800 !important;
+}
+
+.bank .currencyInput{
+  min-width:150px;
+  min-height:40px;
+}
+
+.bank > strong{
+  font-size:clamp(13px,1.4vw,17px) !important;
+}
+
+.bank > span{
+  font-size:clamp(12px,1.2vw,15px);
+  font-weight:600;
+}
+
+@media(max-width:700px){
+  .bank .currencyInput{
+    min-width:0;
+    min-height:31px;
+  }
+  .bank .currencyInput input{
+    font-size:12px !important;
+  }
+}
+
+
+/* Bank Gold Rate: smaller label, larger result box — visual only */
+.bank > strong{font-size:clamp(10px,1vw,13px)!important}
+.bank .currencyInput{min-width:210px!important;min-height:50px!important;padding:0 12px!important}
+.bank .currencyInput input{font-size:clamp(20px,2.4vw,29px)!important;font-weight:800!important}
+.bank .currencyInput > span{font-size:20px;font-weight:800}
+@media(max-width:700px){.bank .currencyInput{min-width:0!important;min-height:38px!important;padding:0 7px!important}.bank .currencyInput input{font-size:16px!important}.bank .currencyInput > span{font-size:14px}.bank > strong{font-size:8px!important}}
+
+/* Bank Gold Rate: move "Per gram" below the input box — layout only */
+.bank{
+  flex-wrap:wrap;
+}
+.bank > span{
+  flex-basis:100%;
+  text-align:center;
+  margin-top:-3px;
+}
+
+
+/* Bank Gold Rate text: slightly larger and balanced — visual only */
+.bank > strong{
+  font-size:clamp(12px,1.25vw,16px) !important;
+  letter-spacing:.04em;
+}
+.bank .currencyInput input{
+  font-size:clamp(21px,2.35vw,28px) !important;
+}
+.bank > span{
+  font-size:clamp(11px,1vw,14px);
+}
+@media(max-width:700px){
+  .bank > strong{font-size:10px !important}
+  .bank .currencyInput input{font-size:17px !important}
+  .bank > span{font-size:9px}
+}
+
+
+/* Information button + help modal — informational UI only */
+.infoButton{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:1001;
+  width:40px;
+  height:40px;
+  border:1px solid #c9a227;
+  border-radius:50%;
+  background:linear-gradient(145deg,#fffdf2,#e8d58e);
+  color:#5e4700;
+  font-size:20px;
+  font-weight:800;
+  font-family:Georgia,serif;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(91,68,0,.18);
+}
+.infoButton:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(91,68,0,.25)}
+.infoButton:focus-visible{outline:3px solid rgba(201,162,39,.35);outline-offset:3px}
+
+.helpOverlay{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(20,24,20,.48);
+  backdrop-filter:blur(5px);
+}
+.helpOverlay.open{display:flex}
+.helpModal{
+  width:min(760px,100%);
+  max-height:min(88vh,800px);
+  overflow:auto;
+  padding:24px;
+  border:1px solid #c9a227;
+  border-radius:20px;
+  background:linear-gradient(145deg,#fffef9,#f5f0df);
+  box-shadow:0 24px 70px rgba(25,22,10,.28);
+}
+.helpHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:15px;
+  padding-bottom:12px;
+  border-bottom:1px solid #ded4b4;
+}
+.helpHeader h2{margin:0;color:#765b09;font-size:24px}
+.helpClose{
+  width:34px;height:34px;border:1px solid #c9a227;border-radius:50%;
+  background:#fff;color:#654d05;font-size:20px;cursor:pointer;
+}
+.helpModal h3{margin:16px 0 7px;color:#4b561f;font-size:15px}
+.helpModal p,.helpModal li{color:#465047;font-size:13px;line-height:1.55}
+.helpModal ul{margin:6px 0 0;padding-left:20px}
+.formula{
+  margin:7px 0;padding:9px 11px;border-radius:9px;
+  background:#f2edda;border:1px solid #ddd0a7;
+  color:#3d3a2e;font-family:monospace;font-size:12px;
+}
+@media(max-width:600px){
+  .infoButton{top:8px;right:8px;width:34px;height:34px;font-size:17px}
+  .helpOverlay{padding:9px}
+  .helpModal{padding:16px;border-radius:15px;max-height:92vh}
+  .helpHeader h2{font-size:19px}
+  .helpModal p,.helpModal li{font-size:12px}
+}
+
+
+/* Top controls above valuation table — layout only */
+.valuationTopControls{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  margin-bottom:9px;
+}
+.valuationTopControls .bank{
+  margin:0;
+  height:auto;
+}
+.valuationTopControls .clearTableBtn{
+  margin:0;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .valuationTopControls{
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:5px;
+  }
+  .valuationTopControls .bank{
+    padding:6px;
+  }
+  .valuationTopControls .bank .currencyInput{
+    min-width:0;
+  }
+  .valuationTopControls .clearTableBtn{
+    min-height:34px;
+    padding:7px 9px;
+    font-size:8px;
+  }
+}
+
+
+/* Bank rate: keep Per gram beside the rate box */
+.valuationTopControls .bank{
+  flex-wrap:nowrap !important;
+  justify-content:flex-start !important;
+}
+.valuationTopControls .bank > span{
+  flex-basis:auto !important;
+  margin-top:0 !important;
+  white-space:nowrap;
+}
+
+/* Total Net Weight: align content to the right */
+.summaryRow .total{
+  justify-content:flex-end !important;
+  gap:14px;
+  text-align:right;
+}
+.summaryRow .total span{
+  text-align:right;
+}
+@media(max-width:700px){
+  .valuationTopControls .bank{
+    flex-wrap:nowrap !important;
+  }
+  .valuationTopControls .bank > span{
+    flex-basis:auto !important;
+    margin-top:0 !important;
+    font-size:8px;
+  }
+  .summaryRow .total{
+    justify-content:flex-end !important;
+    gap:5px;
+  }
+  .summaryRow .total span{
+    font-size:8px;
+  }
+}
+
+
+/* Move TOTAL NET WEIGHT box itself to the right — layout only */
+.summaryRow .total{
+  justify-self:end !important;
+  width:100%;
+  margin-left:auto !important;
+}
+@media(min-width:701px){
+  .summaryRow .total{
+    max-width:100%;
+  }
+}
+
+
+/* TOTAL NET WEIGHT inside valuation table — layout only */
+.tableTotalCell{
+  padding:6px 5px !important;
+  background:#fff !important;
+  border-bottom:0 !important;
+  text-align:right !important;
+}
+.tableTotalCell .total{
+  width:100%;
+  min-height:42px;
+  margin:0 !important;
+  padding:7px 9px !important;
+  justify-content:space-between !important;
+  gap:8px;
+  border-radius:9px;
+}
+.tableTotalCell .total span{
+  font-size:10px;
+  white-space:nowrap;
+}
+.tableTotalCell .total strong{
+  font-size:16px;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .tableTotalCell{
+    padding:3px 1px !important;
+  }
+  .tableTotalCell .total{
+    min-height:32px;
+    padding:5px 4px !important;
+    gap:4px;
+  }
+  .tableTotalCell .total span{
+    font-size:7px;
+  }
+  .tableTotalCell .total strong{
+    font-size:11px;
+  }
+}
+@media(max-width:380px){
+  .tableTotalCell .total span{font-size:6px}
+  .tableTotalCell .total strong{font-size:9px}
+}
+
+
+/* Center align TOTAL NET WEIGHT inside the table — layout only */
+.tableTotalCell{
+  text-align:center !important;
+}
+.tableTotalCell .total{
+  justify-content:center !important;
+  text-align:center !important;
+}
+.tableTotalCell .total span,
+.tableTotalCell .total strong{
+  text-align:center !important;
+}
+
+
+/* Bank Gold Rate compact fit — visual/layout only */
+.valuationTopControls .bank{
+  min-width:0 !important;
+  width:100%;
+  display:grid !important;
+  grid-template-columns:auto minmax(120px,1fr) auto;
+  align-items:center;
+  gap:7px;
+  padding:7px 9px !important;
+  overflow:hidden;
+}
+.valuationTopControls .bank > strong{
+  min-width:0;
+  font-size:clamp(9px,1vw,13px) !important;
+  white-space:nowrap;
+}
+.valuationTopControls .bank .currencyInput{
+  min-width:0 !important;
+  width:100%;
+  height:42px !important;
+  padding:0 8px !important;
+}
+.valuationTopControls .bank .currencyInput input{
+  min-width:0;
+  width:100%;
+  font-size:clamp(17px,2vw,24px) !important;
+  text-align:center !important;
+  overflow:hidden;
+}
+.valuationTopControls .bank .currencyInput > span{
+  flex:0 0 auto;
+  font-size:16px;
+}
+.valuationTopControls .bank > span{
+  min-width:0;
+  flex:0 0 auto;
+  font-size:clamp(9px,1vw,13px) !important;
+  white-space:nowrap;
+  overflow:hidden;
+}
+@media(max-width:700px){
+  .valuationTopControls .bank{
+    grid-template-columns:auto minmax(75px,1fr) auto;
+    gap:3px;
+    padding:5px 4px !important;
+  }
+  .valuationTopControls .bank > strong{
+    font-size:7px !important;
+  }
+  .valuationTopControls .bank .currencyInput{
+    height:32px !important;
+    padding:0 4px !important;
+  }
+  .valuationTopControls .bank .currencyInput input{
+    font-size:12px !important;
+  }
+  .valuationTopControls .bank .currencyInput > span{
+    font-size:11px;
+  }
+  .valuationTopControls .bank > span{
+    font-size:7px !important;
+  }
+}
+@media(max-width:380px){
+  .valuationTopControls .bank{
+    grid-template-columns:auto minmax(65px,1fr) auto;
+    gap:2px;
+  }
+  .valuationTopControls .bank > strong{font-size:6px !important}
+  .valuationTopControls .bank .currencyInput input{font-size:10px !important}
+  .valuationTopControls .bank > span{font-size:6px !important}
+}
+
+
+/* Revert latest Bank Gold Rate fitting adjustment — visual/layout only */
+.valuationTopControls .bank{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  padding:9px 12px !important;
+  overflow:visible !important;
+}
+.valuationTopControls .bank > strong{
+  font-size:clamp(12px,1.25vw,16px) !important;
+  white-space:nowrap;
+}
+.valuationTopControls .bank .currencyInput{
+  min-width:210px !important;
+  width:auto !important;
+  height:50px !important;
+  padding:0 12px !important;
+}
+.valuationTopControls .bank .currencyInput input{
+  width:100% !important;
+  font-size:clamp(21px,2.35vw,28px) !important;
+  text-align:right !important;
+}
+.valuationTopControls .bank .currencyInput > span{
+  font-size:20px;
+}
+.valuationTopControls .bank > span{
+  flex-basis:auto !important;
+  margin-top:0 !important;
+  font-size:clamp(11px,1vw,14px) !important;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .valuationTopControls .bank{
+    display:flex !important;
+    gap:4px !important;
+    padding:6px !important;
+  }
+  .valuationTopControls .bank .currencyInput{
+    min-width:0 !important;
+    height:38px !important;
+    padding:0 7px !important;
+  }
+  .valuationTopControls .bank .currencyInput input{
+    font-size:17px !important;
+  }
+  .valuationTopControls .bank .currencyInput > span{
+    font-size:14px;
+  }
+  .valuationTopControls .bank > strong{
+    font-size:10px !important;
+  }
+  .valuationTopControls .bank > span{
+    font-size:9px !important;
+  }
+}
+
+
+/* Bank Gold Rate box: shorter vertically and positioned directly after label */
+.valuationTopControls .bank{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:7px !important;
+  padding:6px 9px !important;
+}
+.valuationTopControls .bank > strong{
+  flex:0 0 auto;
+}
+.valuationTopControls .bank .currencyInput{
+  flex:0 1 190px !important;
+  min-width:130px !important;
+  height:36px !important;
+  min-height:36px !important;
+  padding:0 8px !important;
+}
+.valuationTopControls .bank .currencyInput input{
+  height:100% !important;
+  font-size:clamp(17px,2vw,23px) !important;
+}
+.valuationTopControls .bank .currencyInput > span{
+  font-size:16px;
+}
+.valuationTopControls .bank > span{
+  flex:0 0 auto;
+  margin-top:0 !important;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .valuationTopControls .bank{
+    gap:4px !important;
+    padding:5px 5px !important;
+  }
+  .valuationTopControls .bank .currencyInput{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    height:31px !important;
+    min-height:31px !important;
+  }
+  .valuationTopControls .bank .currencyInput input{
+    font-size:13px !important;
+  }
+  .valuationTopControls .bank .currencyInput > span{
+    font-size:12px;
+  }
+}
+
+
+/* TOTAL NET WEIGHT: larger, cleaner box and better text fit — visual only */
+.tableTotalCell .total{
+  min-height:54px !important;
+  padding:9px 13px !important;
+  border-radius:11px !important;
+  gap:12px !important;
+}
+.tableTotalCell .total span{
+  font-size:clamp(11px,1.15vw,16px) !important;
+  font-weight:800 !important;
+  letter-spacing:.04em;
+  line-height:1.15;
+  white-space:nowrap;
+}
+.tableTotalCell .total strong{
+  font-size:clamp(18px,2.2vw,27px) !important;
+  line-height:1;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .tableTotalCell .total{
+    min-height:40px !important;
+    padding:6px 7px !important;
+    gap:6px !important;
+  }
+  .tableTotalCell .total span{
+    font-size:8px !important;
+  }
+  .tableTotalCell .total strong{
+    font-size:14px !important;
+  }
+}
+@media(max-width:380px){
+  .tableTotalCell .total{
+    min-height:36px !important;
+    padding:5px !important;
+    gap:4px !important;
+  }
+  .tableTotalCell .total span{
+    font-size:7px !important;
+  }
+  .tableTotalCell .total strong{
+    font-size:12px !important;
+  }
+}
+
+
+/* Center TOTAL NET WEIGHT box and its contents — layout only */
+.tableTotalCell{
+  text-align:center !important;
+}
+.tableTotalCell .total{
+  width:100% !important;
+  justify-content:center !important;
+  align-items:center !important;
+  text-align:center !important;
+}
+.tableTotalCell .total span,
+.tableTotalCell .total strong{
+  text-align:center !important;
+}
+
+
+/* TOTAL NET WEIGHT — centered box layout only */
+.tableTotalCell{
+  text-align:center !important;
+  vertical-align:middle !important;
+}
+.tableTotalCell .total{
+  width:min(100%, 520px) !important;
+  margin:0 auto !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  text-align:center !important;
+  gap:14px !important;
+}
+.tableTotalCell .total span,
+.tableTotalCell .total strong{
+  text-align:center !important;
+}
+@media(max-width:700px){
+  .tableTotalCell .total{
+    width:100% !important;
+    gap:6px !important;
+  }
+}
+
+
+/* Final TOTAL NET WEIGHT visual correction */
+.tableTotalCell{
+  padding:8px 5px !important;
+  background:#fff !important;
+  border-bottom:0 !important;
+  text-align:center !important;
+}
+.tableTotalCell .total{
+  width:100% !important;
+  min-height:56px !important;
+  margin:0 auto !important;
+  padding:10px 16px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:18px !important;
+  border-radius:12px !important;
+  text-align:center !important;
+}
+.tableTotalCell .total span{
+  font-size:clamp(12px,1.25vw,17px) !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+}
+.tableTotalCell .total strong{
+  font-size:clamp(20px,2.5vw,30px) !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+}
+@media(max-width:700px){
+  .tableTotalCell{padding:4px 1px !important}
+  .tableTotalCell .total{
+    min-height:40px !important;
+    padding:6px 8px !important;
+    gap:8px !important;
+  }
+  .tableTotalCell .total span{font-size:8px !important}
+  .tableTotalCell .total strong{font-size:14px !important}
+}
+@media(max-width:380px){
+  .tableTotalCell .total{
+    min-height:36px !important;
+    gap:5px !important;
+    padding:5px !important;
+  }
+  .tableTotalCell .total span{font-size:7px !important}
+  .tableTotalCell .total strong{font-size:12px !important}
+}
+
+
+/* ROI title inside the ROI table, beside the result boxes — layout only */
+.roiRow{
+  display:grid !important;
+  grid-template-columns:70px minmax(0,1fr) !important;
+  gap:8px !important;
+  align-items:stretch !important;
+  padding:6px !important;
+  border:1px solid rgba(50,62,54,.14);
+  border-radius:11px;
+  background:rgba(255,255,255,.45);
+}
+.roiRow h3{
+  margin:0 !important;
+  min-height:100%;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border:1px solid #d4c89f;
+  border-radius:9px;
+  background:linear-gradient(145deg,#fffdf2,#f0e6c2);
+  color:#70570b;
+  font-size:12px !important;
+  letter-spacing:.1em;
+  text-align:center;
+}
+.roiGrid{
+  min-width:0;
+}
+.retail .roiRow h3{
+  border-color:#d7a2a2;
+  background:linear-gradient(145deg,#fff8f8,#f1dddd);
+  color:#8b2222;
+}
+@media(max-width:700px){
+  .roiRow{
+    grid-template-columns:42px minmax(0,1fr) !important;
+    gap:4px !important;
+    padding:4px !important;
+  }
+  .roiRow h3{
+    font-size:8px !important;
+  }
+}
+@media(max-width:380px){
+  .roiRow{
+    grid-template-columns:35px minmax(0,1fr) !important;
+  }
+  .roiRow h3{
+    font-size:7px !important;
+  }
+}
+
+
+/* Common "After Deduction (g)" header — layout only */
+table thead .subHeader th{
+  padding:5px 4px;
+  font-size:9px;
+  color:#fff;
+  background:linear-gradient(135deg,#54151f,#3e0d15);
+  border-bottom:1px solid #c9a227;
+}
+table thead .subHeader th:first-child,
+table thead .subHeader th:nth-child(2),
+table thead .subHeader th:last-child{
+  background:linear-gradient(135deg,#54151f,#3e0d15);
+}
+@media(max-width:700px){
+  table thead .subHeader th{
+    padding:4px 1px;
+    font-size:7px;
+  }
+}
+
+
+/* Keep Gross Weight, Deduction and User Value as single cells — layout only */
+table thead tr:first-child > th[rowspan="2"]{
+  vertical-align:middle !important;
+  padding-top:8px;
+  padding-bottom:8px;
+}
+
+
+/* 22K / 18K valuation result boxes — visual adjustment only */
+table td.calc.k22,
+table td.calc.k18{
+  height:30px !important;
+  padding:2px 5px !important;
+  border-radius:7px !important;
+  line-height:1.05 !important;
+}
+@media(max-width:700px){
+  table td.calc.k22,
+  table td.calc.k18{
+    height:26px !important;
+    padding:1px 2px !important;
+    border-radius:6px !important;
+  }
+}
+@media(max-width:380px){
+  table td.calc.k22,
+  table td.calc.k18{
+    height:24px !important;
+    padding:1px !important;
+    border-radius:5px !important;
+  }
+}
+
+
+/* 22K / 18K valuation result corners ONLY */
+td.calc.k22,
+td.calc.k18,
+td.calc22,
+td.calc18{
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+
+
+/* Re-created valuation-card header ONLY */
+.valuationHeader th{
+  color:#fff !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+  font-weight:800 !important;
+  letter-spacing:.025em;
+  border-right:1px solid rgba(255,255,255,.13);
+  background:linear-gradient(135deg,#741f2d 0%,#54151f 48%,#3b0d15 100%) !important;
+}
+.valuationHeaderMain th{
+  height:42px;
+  padding:8px 6px !important;
+  font-size:11px !important;
+  border-bottom:1px solid #c9a227 !important;
+}
+.valuationHeaderSub th{
+  height:30px;
+  padding:5px 4px !important;
+  font-size:9px !important;
+  background:linear-gradient(135deg,#5e1824 0%,#430f17 100%) !important;
+  border-bottom:2px solid #c9a227 !important;
+}
+.valuationHeaderMain th:first-child{
+  border-radius:11px 0 0 0 !important;
+}
+.valuationHeaderMain th:last-child{
+  border-radius:0 11px 0 0 !important;
+}
+.valuationHeaderSub th:last-child{
+  border-right:0 !important;
+}
+@media(max-width:700px){
+  .valuationHeaderMain th{
+    height:34px;
+    padding:5px 2px !important;
+    font-size:8px !important;
+    line-height:1.1;
+  }
+  .valuationHeaderSub th{
+    height:24px;
+    padding:3px 1px !important;
+    font-size:7px !important;
+  }
+}
+@media(max-width:380px){
+  .valuationHeaderMain th{font-size:7px !important}
+  .valuationHeaderSub th{font-size:6px !important}
+}
+
+
+/* Valuation header background: white only */
+.valuationHeader th,
+.valuationHeaderMain th,
+.valuationHeaderSub th{
+  background:#fff !important;
+  color:#5a4610 !important;
+  border-color:#c9a227 !important;
+}
+
+
+/* Fresh valuation table header — header only */
+.valuationHeader th{
+  background:#ffffff !important;
+  color:#3f351d !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+  font-weight:800 !important;
+  letter-spacing:.025em;
+  border-right:1px solid #d9cfae !important;
+  border-bottom:1px solid #c9a227 !important;
+}
+.valuationHeaderMain th{
+  height:44px !important;
+  padding:8px 6px !important;
+  font-size:11px !important;
+}
+.valuationHeaderSub th{
+  height:30px !important;
+  padding:5px 4px !important;
+  font-size:9px !important;
+  background:#faf9f5 !important;
+  color:#806517 !important;
+  border-bottom:2px solid #c9a227 !important;
+}
+.valuationHeaderMain th:first-child{
+  border-radius:11px 0 0 0 !important;
+}
+.valuationHeaderMain th:last-child{
+  border-radius:0 11px 0 0 !important;
+  border-right:0 !important;
+}
+.valuationHeaderSub th:last-child{
+  border-right:0 !important;
+}
+@media(max-width:700px){
+  .valuationHeaderMain th{
+    height:34px !important;
+    padding:5px 2px !important;
+    font-size:8px !important;
+    line-height:1.1;
+  }
+  .valuationHeaderSub th{
+    height:24px !important;
+    padding:3px 1px !important;
+    font-size:7px !important;
+  }
+}
+@media(max-width:380px){
+  .valuationHeaderMain th{font-size:7px !important}
+  .valuationHeaderSub th{font-size:6px !important}
+}
+
+
+/* Light gold valuation table header — color only */
+.valuationHeader th,
+.valuationHeaderMain th{
+  background:#f4e7b5 !important;
+  color:#5c4915 !important;
+}
+.valuationHeaderSub th{
+  background:#fbf4d8 !important;
+  color:#765d18 !important;
+}
+
+
+/* Reduce valuation table header height only */
+.valuationHeaderMain th{
+  height:32px !important;
+  padding:4px 5px !important;
+}
+.valuationHeaderSub th{
+  height:22px !important;
+  padding:3px 3px !important;
+}
+@media(max-width:700px){
+  .valuationHeaderMain th{
+    height:27px !important;
+    padding:3px 2px !important;
+  }
+  .valuationHeaderSub th{
+    height:19px !important;
+    padding:2px 1px !important;
+  }
+}
+
+
+
+/* Updated calculator information/help panel — informational UI only */
+.calcInfoBtn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:1px solid #c9a227;
+  background:#fffdf2;
+  color:#7a5d0a;
+  font-weight:900;
+  font-size:18px;
+  cursor:pointer;
+  z-index:5;
+}
+.calcInfoModal[hidden]{display:none}
+.calcInfoModal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+}
+.calcInfoBackdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(20,20,14,.42);
+}
+.calcInfoCard{
+  position:relative;
+  z-index:1;
+  width:min(620px,96vw);
+  max-height:88vh;
+  overflow:auto;
+  padding:22px;
+  border:1px solid #c9a227;
+  border-radius:16px;
+  background:#fffdf7;
+  box-shadow:0 18px 50px rgba(45,35,10,.22);
+  color:#29291f;
+}
+.calcInfoContent h3{
+  margin:0 32px 12px 0;
+  color:#806217;
+  font-size:20px;
+}
+.calcInfoContent h4{
+  margin:12px 0 5px;
+  color:#5c4915;
+  font-size:13px;
+}
+.calcInfoContent ul{
+  margin:4px 0 8px 18px;
+  padding:0;
+}
+.calcInfoContent li,
+.calcInfoContent p{
+  margin:4px 0;
+  font-size:12px;
+  line-height:1.45;
+}
+.infoNote{
+  padding:8px 10px;
+  border-radius:8px;
+  background:#f7efd1;
+  border-left:3px solid #c9a227;
+}
+.calcInfoClose{
+  position:absolute;
+  top:8px;
+  right:9px;
+  border:0;
+  background:transparent;
+  color:#604d18;
+  font-size:26px;
+  cursor:pointer;
+}
+@media(max-width:600px){
+  .calcInfoBtn{width:30px;height:30px;font-size:16px}
+  .calcInfoCard{padding:17px}
+  .calcInfoContent h3{font-size:17px}
+  .calcInfoContent h4{font-size:11px}
+  .calcInfoContent li,.calcInfoContent p{font-size:10px}
+}
+
+
+
+/* Increase text size after the ROI result box */
+.roiBox>label{font-size:10px !important}
+.interestAmount label{font-size:10px !important}
+.interestAmount .readonlyCurrency{font-size:12px !important}
+@media(max-width:700px){
+  .roiBox>label{font-size:8px !important}
+  .interestAmount label{font-size:8px !important}
+  .interestAmount .readonlyCurrency{font-size:10px !important}
+}
+@media(max-width:380px){
+  .roiBox>label{font-size:7px !important}
+  .interestAmount label{font-size:7px !important}
+  .interestAmount .readonlyCurrency{font-size:9px !important}
+}
+
+/* Center-align all editable text inside the valuation table */
+.valuation-table input, .valuation-table textarea, .valuation-table select { text-align: center; }
+</style>
+
+<style>
+.clearTableBtn{display:block;margin:8px 0 0 auto;min-height:38px;padding:8px 15px;border:1px solid #b52b2b;border-radius:9px;background:linear-gradient(145deg,#fff7f7,#f3dada);color:#8b1f1f;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.05em;cursor:pointer;box-shadow:0 5px 13px rgba(120,25,25,.10)}
+.clearTableBtn:hover{background:linear-gradient(145deg,#fff,#edcaca)}
+@media(max-width:600px){.clearTableBtn{min-height:34px;padding:7px 11px;font-size:9px;margin-top:5px}}
+
+
+/* Increase text size after the ROI result box */
+.roiBox>label{font-size:10px !important}
+.interestAmount label{font-size:10px !important}
+.interestAmount .readonlyCurrency{font-size:12px !important}
+@media(max-width:700px){
+  .roiBox>label{font-size:8px !important}
+  .interestAmount label{font-size:8px !important}
+  .interestAmount .readonlyCurrency{font-size:10px !important}
+}
+@media(max-width:380px){
+  .roiBox>label{font-size:7px !important}
+  .interestAmount label{font-size:7px !important}
+  .interestAmount .readonlyCurrency{font-size:9px !important}
+}
+</style>
+
+  <meta name="theme-color" content="#c9a227">
+  <meta name="background-color" content="#f2eee4">
+  <meta name="description" content="Gold Valuation Calculator for gold weight, valuation, schemes, ROI and monthly interest.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+
+
+<style>
+.installAppBtn{
+  margin:12px auto 0;
+  min-height:40px;
+  padding:9px 18px;
+  border:1px solid #a47b08;
+  border-radius:10px;
+  background:linear-gradient(145deg,#fffdf0,#e9d27c);
+  color:#5f4905;
+  font-family:inherit;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.06em;
+  cursor:pointer;
+  box-shadow:0 6px 15px rgba(91,68,0,.14);
+}
+.installAppBtn:hover{transform:translateY(-1px)}
+.installAppBtn[hidden]{display:none!important}
+@media(max-width:700px){.installAppBtn{min-height:34px;padding:7px 13px;font-size:9px;margin-top:8px}}
+
+
+/* Increase text size after the ROI result box */
+.roiBox>label{font-size:10px !important}
+.interestAmount label{font-size:10px !important}
+.interestAmount .readonlyCurrency{font-size:12px !important}
+@media(max-width:700px){
+  .roiBox>label{font-size:8px !important}
+  .interestAmount label{font-size:8px !important}
+  .interestAmount .readonlyCurrency{font-size:10px !important}
+}
+@media(max-width:380px){
+  .roiBox>label{font-size:7px !important}
+  .interestAmount label{font-size:7px !important}
+  .interestAmount .readonlyCurrency{font-size:9px !important}
+}
+</style>
+
+<style>
+/* Center all editable text boxes under Gross Weight */
+.gross-weight input:not([readonly]):not([disabled]),
+#grossWeight input:not([readonly]):not([disabled]),
+.grossWeight input:not([readonly]):not([disabled]) { text-align: center !important; }
+</style>
+
+<style>
+/* TOTAL NET WEIGHT — larger text and matching result-box color */
+.tableTotalCell .total span{
+  font-size:clamp(16px,1.5vw,21px) !important;
+  font-weight:800 !important;
+  color:#8a6910 !important;
+  letter-spacing:.04em;
+  line-height:1.15;
+  white-space:nowrap;
+}
+.tableTotalCell .total strong{
+  font-size:clamp(20px,2.5vw,30px) !important;
+  font-weight:800 !important;
+  color:#8a6910 !important;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .tableTotalCell .total span{font-size:11px !important}
+  .tableTotalCell .total strong{font-size:16px !important}
+}
+</style>
+</head>
+<body>
+
+<button class="infoButton" id="infoButton" type="button"
+        aria-label="How to use Gold Valuation Calculator"
+        aria-controls="helpOverlay" aria-expanded="false">i</button>
+
+<div class="helpOverlay" id="helpOverlay" role="dialog"
+     aria-modal="true" aria-labelledby="helpTitle">
+  <div class="helpModal">
+    <div class="helpHeader">
+      <h2 id="helpTitle">How to Use the Gold Valuation Calculator</h2>
+      <button class="helpClose" id="helpClose" type="button"
+              aria-label="Close information">×</button>
+    </div>
+
+    <p>This calculator helps you estimate gold values, scheme values, eligible amounts and monthly interest. Enter your information in the editable fields; calculated fields update automatically.</p>
+
+    <h3>1. Gold Valuation Table</h3>
+    <ul>
+      <li><strong>Gross Weight (g):</strong> Enter the gross weight of each gold item in grams.</li>
+      <li><strong>Deduction (g):</strong> Enter the deduction for that item. Negative weights are not allowed.</li>
+      <li><strong>22K / 18K:</strong> These are calculated automatically from the net weight.</li>
+      <li><strong>User Value:</strong> Enter the value you want to include in the total. Leave it empty if there is no value.</li>
+    </ul>
+    <div class="formula">Net Weight = Gross Weight − Deduction</div>
+    <div class="formula">22K Weight = Net Weight × 90%</div>
+    <div class="formula">18K Weight = Net Weight × 80%</div>
+
+    <h3>2. Total Net Weight</h3>
+    <p>The total is calculated automatically from all <strong>User Value</strong> entries. The displayed amount is rounded to whole rupees while the underlying calculation retains precision.</p>
+
+    <h3>3. Bank Gold Rate</h3>
+    <p>Enter the current bank gold rate per gram. This rate is used automatically by the Agriculture and Retail scheme calculations.</p>
+
+    <h3>4. Agriculture Scheme</h3>
+    <p>The three Agriculture cards show 75%, 80% and 85% calculations.</p>
+    <div class="formula">Rate Per Gram = Bank Gold Rate × Scheme %</div>
+    <div class="formula">Scheme Value = Total Net Weight × Bank Gold Rate × Scheme %</div>
+    <p>The Rate Per Gram fields are calculated automatically and cannot be edited.</p>
+
+    <h3>5. Retail Scheme</h3>
+    <p>The Retail cards calculate 65% and 68% using the same structure:</p>
+    <div class="formula">Rate Per Gram = Bank Gold Rate × Scheme %</div>
+    <div class="formula">Scheme Value = Total Net Weight × Bank Gold Rate × Scheme %</div>
+
+    <h3>6. Eligible Amount</h3>
+    <p>Enter the eligible loan/amount for the applicable ROI slab. It is an editable rupee field and does not change the scheme valuation calculation.</p>
+
+    <h3>7. ROI</h3>
+    <p>Enter the annual ROI percentage for the applicable slab. The monthly interest rate is calculated automatically:</p>
+    <div class="formula">Interest Per Month (%) = ROI ÷ 12</div>
+
+    <h3>8. Interest Amount Month</h3>
+    <p>The calculated monthly interest amount uses the Eligible Amount and the monthly rate:</p>
+    <div class="formula">Interest Amount Month = Eligible Amount × (ROI ÷ 12) ÷ 100</div>
+    <p>This result is not editable and is displayed as whole rupees.</p>
+
+    <h3>9. Tips</h3>
+    <ul>
+      <li>Use the <strong>0.000</strong> hint format for weights.</li>
+      <li>Use the <strong>0.00</strong> hint format for User Value and ROI.</li>
+      <li>Use the <strong>13,500</strong> hint as the Bank Gold Rate format.</li>
+      <li>All editable numeric fields accept keyboard input and reject negative values.</li>
+      <li>Changes are calculated instantly without reloading the page.</li>
+      <li>The calculator does not require a backend and can be used offline once the page is loaded.</li>
+    </ul>
+  </div>
+</div>
+
+<main class="app">
+  <header class="hero">
+    <h1><span>◆ GOLD</span> VALUATION CALCULATOR <span>◆</span></h1>
+    <button type="button" class="installAppBtn" id="installAppBtn" hidden>INSTALL APP</button>
+  </header>
+<button type="button" class="calcInfoBtn" id="calcInfoBtn" aria-label="How to use calculator" aria-controls="calcInfoModal" aria-expanded="false">i</button>
+<div class="calcInfoModal" id="calcInfoModal" hidden role="dialog" aria-modal="true" aria-labelledby="calcInfoTitle">
+  <div class="calcInfoBackdrop" data-close-info></div>
+  <div class="calcInfoCard">
+    <button type="button" class="calcInfoClose" id="calcInfoClose" aria-label="Close information">×</button>
+    <div id="calcInfoTitle">
+<div class="calcInfoContent">
+  <h3>How to Use the Gold Valuation Calculator</h3>
+
+  <h4>1. Gold Valuation Table</h4>
+  <ul>
+    <li>Enter the <strong>Gross Weight (g)</strong> for each item.</li>
+    <li>Enter the <strong>Deduction (g)</strong>.</li>
+    <li>The calculator automatically calculates Net Weight, 22K (90%) and 18K (80%) after deduction.</li>
+    <li>Enter the <strong>User Value</strong> for each row.</li>
+    <li><strong>TOTAL NET WEIGHT</strong> is calculated from the User Value entries according to the calculator's existing formula.</li>
+  </ul>
+
+  <h4>2. Bank Gold Rate</h4>
+  <ul>
+    <li>Enter the current <strong>Bank Gold Rate per gram</strong>.</li>
+    <li>The Agriculture and Retail Rate Per Gram values update automatically.</li>
+  </ul>
+
+  <h4>3. Agriculture Scheme</h4>
+  <ul>
+    <li>The 75%, 80% and 85% values are calculated automatically.</li>
+    <li>Rate Per Gram is based on Bank Gold Rate × the applicable percentage.</li>
+    <li>Enter an <strong>Eligible Amount</strong> for the ROI interest calculation.</li>
+    <li>Enter the ROI percentage. <strong>Interest Per Month (%) = ROI ÷ 12</strong>.</li>
+    <li><strong>Interest Amount Month (₹)</strong> is calculated from the Eligible Amount and monthly interest rate.</li>
+  </ul>
+
+  <h4>4. Retail Scheme</h4>
+  <ul>
+    <li>The 65% and 68% values update automatically.</li>
+    <li>Rate Per Gram is based on Bank Gold Rate × the applicable percentage.</li>
+    <li>Enter an <strong>Eligible Amount</strong> for the ROI interest calculation.</li>
+    <li>Enter the ROI percentage. <strong>Interest Per Month (%) = ROI ÷ 12</strong>.</li>
+  </ul>
+
+  <h4>5. Clear Table</h4>
+  <p>The <strong>CLEAR TABLE</strong> button clears only the editable fields in the Gold Valuation Table. It does not change the calculation formulas.</p>
+
+  <p class="infoNote"><strong>Tip:</strong> Enter or edit the values from top to bottom. All calculated results update instantly without reloading the page.</p>
+</div>
+</div>
+  </div>
+</div>
+
+
+  <section class="panel valuation">
+    <div class="valuationTopControls">
+  <section class="bank">
+        <strong>Bank Gold Rate</strong>
+        <div class="currencyInput">
+          <span>₹</span>
+          <input id="bankRate" type="text" min="0" step="1" placeholder="0" inputmode="decimal" aria-label="Bank Gold Rate">
+        </div>
+        <span>Per gram</span>
+      </section>
+  <button class="clearTableBtn" id="clearTableBtn" type="button">CLEAR TABLE</button>
+</div>
+
+<div class="tableWrap">
+      <table>
+        <thead class="valuationHeader">
+          <tr class="valuationHeaderMain">
+            <th rowspan="2">Gross Weight (g)</th>
+            <th rowspan="2">Deduction (g)</th>
+            <th colspan="2">After Deduction (g)</th>
+            <th rowspan="2">User Value</th>
+          </tr>
+          <tr class="valuationHeaderSub">
+            <th>22K (90%)</th>
+            <th>18K (80%)</th>
+          </tr>
+        </thead>
+        <tbody id="valuationRows"></tbody>
+      
+<tfoot>
+  <tr>
+    <td colspan="5" class="tableTotalCell"><div class="total">
+        <span>TOTAL NET WEIGHT</span>
+        <strong id="totalValue">0 Gram</strong>
+      </div></td>
+  </tr>
+</tfoot>
+      </table>
+    </div>
+
+    
+
+    <div class="summaryRow">
+      
+
+      
+    </div>
+  </section>
+
+  <section class="scheme agriculture">
+    <div class="schemeTitle">🌿 AGRICULTURE SCHEME 🌿</div>
+
+    <div class="schemeContent">
+      <div class="cards three">
+        <article class="card">
+          <h2>VALUE @ 75%</h2>
+          <div class="amount green" id="agri75">₹0</div>
+          <div class="rateBlock">
+            <label for="agri75Rate">Rate Per Gram</label>
+            <div class="readonlyCurrency"><span>₹</span><input id="agri75Rate" readonly aria-label="Agriculture 75 percent rate per gram"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>VALUE @ 80%</h2>
+          <div class="amount green" id="agri80">₹0</div>
+          <div class="rateBlock">
+            <label for="agri80Rate">Rate Per Gram</label>
+            <div class="readonlyCurrency"><span>₹</span><input id="agri80Rate" readonly aria-label="Agriculture 80 percent rate per gram"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>VALUE @ 85%</h2>
+          <div class="amount green" id="agri85">₹0</div>
+          <div class="rateBlock">
+            <label for="agri85Rate">Rate Per Gram</label>
+            <div class="readonlyCurrency"><span>₹</span><input id="agri85Rate" readonly aria-label="Agriculture 85 percent rate per gram"></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="roiArea">
+        <div class="eligibleRow">
+          <label for="agriEligible">Eligible Amount</label>
+          <div class="currencyInput"><span>₹</span><input id="agriEligible" type="text" min="0" step="1" placeholder="0" inputmode="decimal" aria-label="Agriculture Eligible Amount"></div>
+        </div>
+
+        <div class="roiRow">
+          <h3>ROI</h3>
+          <div class="roiGrid">
+            <div class="roiBox">
+              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Agriculture ROI up to 2.5 L"><span>%</span></div><span>Up to 2.5 L</span></div>
+              <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
+              <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
+            </div>
+            <div class="roiBox">
+              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Agriculture ROI above 2.5 L"><span>%</span></div><span>Above 2.5 L</span></div>
+              <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
+              <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scheme retail">
+    <div class="schemeTitle">₹ RETAIL SCHEME ₹</div>
+
+    <div class="schemeContent">
+      <div class="cards two">
+        <article class="card">
+          <h2>VALUE @ 65%</h2>
+          <div class="amount red" id="retail65">₹0</div>
+          <div class="rateBlock">
+            <label for="retail65Rate">Rate Per Gram</label>
+            <div class="readonlyCurrency"><span>₹</span><input id="retail65Rate" readonly aria-label="Retail 65 percent rate per gram"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>VALUE @ 68%</h2>
+          <div class="amount red" id="retail68">₹0</div>
+          <div class="rateBlock">
+            <label for="retail68Rate">Rate Per Gram</label>
+            <div class="readonlyCurrency"><span>₹</span><input id="retail68Rate" readonly aria-label="Retail 68 percent rate per gram"></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="roiArea">
+        <div class="eligibleRow">
+          <label for="retailEligible">Eligible Amount</label>
+          <div class="currencyInput"><span>₹</span><input id="retailEligible" type="text" min="0" step="1" placeholder="0" inputmode="decimal" aria-label="Retail Eligible Amount"></div>
+        </div>
+
+        <div class="roiRow">
+          <h3>ROI</h3>
+          <div class="roiGrid">
+            <div class="roiBox">
+              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Retail ROI up to 10 L"><span>%</span></div><span>Up to 10 L</span></div>
+              <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
+              <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
+            </div>
+            <div class="roiBox">
+              <div class="roiTop"><div class="percentInput"><input class="roiInput" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Retail ROI above 10 L"><span>%</span></div><span>Above 10 L</span></div>
+              <label>Interest Per Month (%)<input class="monthlyRate" readonly></label>
+              <div class="interestAmount"><label>Interest Amount Month (₹)</label><div class="readonlyCurrency"><span>₹</span><input class="interestAmountValue" readonly></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+const rows=document.getElementById('valuationRows');
+const bankRate=document.getElementById('bankRate');
+
+function n(v){
+  const cleaned=String(v ?? '').replace(/,/g,'').replace(/[^0-9.]/g,'');
+  const x=parseFloat(cleaned);
+  return Number.isFinite(x)&&x>=0?x:0;
+}
+function indianNumber(v, decimals=0){
+  const x=n(v);
+  return new Intl.NumberFormat('en-IN',{
+    minimumFractionDigits:decimals,
+    maximumFractionDigits:decimals
+  }).format(x);
+}
+function formatAmountInput(input, decimals=0){
+  if(!input || input.value==='') return;
+  input.value=indianNumber(input.value, decimals);
+}
+function inr(v){
+  return new Intl.NumberFormat('en-IN',{
+    style:'currency',currency:'INR',
+    minimumFractionDigits:0,maximumFractionDigits:0
+  }).format(Math.round(n(v)));
+}
+function rateText(v){
+  return indianNumber(v,2);
+}
+
+/* Six valuation rows. Inputs are intentionally empty and use placeholders. */
+for(let i=0;i<6;i++){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td><input class="tableInput gross" type="number" min="0" step="0.001" placeholder="0.000" inputmode="decimal" aria-label="Gross Weight row ${i+1}"></td>
+    <td><input class="tableInput deduction" type="number" min="0" step="0.001" placeholder="0.000" inputmode="decimal" aria-label="Deduction row ${i+1}"></td>
+    <td class="calc k22">0.000</td>
+    <td class="calc k18">0.000</td>
+    <td><input class="tableInput user" type="text" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="User Value row ${i+1}"></td>
+  `;
+  rows.appendChild(tr);
+}
+const tableRows=[...rows.querySelectorAll('tr')];
+
+function totalUserValue(){
+  return tableRows.reduce((s,r)=>s+n(r.querySelector('.user').value),0);
+}
+
+function updateValuation(){
+  tableRows.forEach(r=>{
+    const gross=n(r.querySelector('.gross').value);
+    const deduction=n(r.querySelector('.deduction').value);
+    const net=Math.max(0,gross-deduction);
+    r.querySelector('.k22').textContent=(net*.90).toFixed(3);
+    r.querySelector('.k18').textContent=(net*.80).toFixed(3);
+  });
+  document.getElementById('totalValue').textContent=indianNumber(totalUserValue(),3)+' Gram';
+  updateSchemes();
+}
+
+function updateSchemes(){
+  const total=totalUserValue();
+  const bank=n(bankRate.value);
+  const schemes=[
+    ['agri75','agri75Rate',.75],
+    ['agri80','agri80Rate',.80],
+    ['agri85','agri85Rate',.85],
+    ['retail65','retail65Rate',.65],
+    ['retail68','retail68Rate',.68]
+  ];
+  schemes.forEach(([result,rate,pct])=>{
+    document.getElementById(rate).value=rateText(bank*pct);
+    document.getElementById(result).textContent=inr(total*bank*pct);
+  });
+}
+
+function updateROI(){
+  document.querySelectorAll('.roiBox').forEach(box=>{
+    const roi=n(box.querySelector('.roiInput').value);
+    const monthly=roi/12;
+    box.querySelector('.monthlyRate').value=monthly.toFixed(4)+'%';
+    const eligibleInput=box.closest('.roiArea').querySelector('.eligibleRow input');
+    const interest=n(eligibleInput.value)*monthly/100;
+    box.querySelector('.interestAmountValue').value=indianNumber(Math.round(interest),0);
+  });
+}
+
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.matches('input:not([readonly])') && !el.classList.contains('roiInput')){
+    if(el.value!=='' && n(el.value)<0) el.value='0';
+    updateValuation();
+    updateROI();
+  }
+});
+
+updateValuation();
+updateROI();
+
+  document.querySelectorAll('.user, #bankRate, #agriEligible, #retailEligible').forEach(input=>{
+    input.addEventListener('blur',()=>{
+      if(input.value!=='') formatAmountInput(input, input.classList.contains('user') ? 2 : 0);
+    });
+    input.addEventListener('focus',()=>{
+      input.value=input.value.replace(/,/g,'');
+    });
+  });
+
+
+
+document.querySelectorAll('.roiInput').forEach(input=>{
+  input.addEventListener('input',()=>{
+    if(input.value!=='' && n(input.value)<0) input.value='0';
+    updateROI();
+  });
+});
+
+</script>
+
+<script>
+(function(){
+  const infoButton=document.getElementById('infoButton');
+  const overlay=document.getElementById('helpOverlay');
+  const closeButton=document.getElementById('helpClose');
+
+  function openHelp(){
+    overlay.classList.add('open');
+    infoButton.setAttribute('aria-expanded','true');
+    closeButton.focus();
+  }
+
+  function closeHelp(){
+    overlay.classList.remove('open');
+    infoButton.setAttribute('aria-expanded','false');
+    infoButton.focus();
+  }
+
+  infoButton.addEventListener('click',openHelp);
+  closeButton.addEventListener('click',closeHelp);
+
+  overlay.addEventListener('click',e=>{
+    if(e.target===overlay) closeHelp();
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && overlay.classList.contains('open')) closeHelp();
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+ const b=document.getElementById('clearTableBtn');
+ if(!b)return;
+ b.addEventListener('click',function(){
+  document.querySelectorAll('#valuationRows .gross,#valuationRows .deduction,#valuationRows .user').forEach(function(i){i.value='';});
+  const i=document.querySelector('#valuationRows .gross');
+  if(i)i.dispatchEvent(new Event('input',{bubbles:true}));
+ });
+})();
+</script>
+
+
+
+
+<script>
+(function(){
+  const btn=document.getElementById('calcInfoBtn');
+  const modal=document.getElementById('calcInfoModal');
+  const close=document.getElementById('calcInfoClose');
+  if(!btn||!modal||!close) return;
+  function openInfo(){
+    modal.hidden=false;
+    btn.setAttribute('aria-expanded','true');
+    close.focus();
+  }
+  function closeInfo(){
+    modal.hidden=true;
+    btn.setAttribute('aria-expanded','false');
+    btn.focus();
+  }
+  btn.addEventListener('click',openInfo);
+  close.addEventListener('click',closeInfo);
+  modal.querySelector('[data-close-info]')?.addEventListener('click',closeInfo);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&!modal.hidden) closeInfo();
+  });
+})();
+</script>
+
+
+<script>
+// PWA install support for Chrome. The button appears only when Chrome
+// has determined that this page is installable.
+let deferredInstallPrompt = null;
+const installAppBtn = document.getElementById('installAppBtn');
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  if (installAppBtn) installAppBtn.hidden = false;
+});
+
+if (installAppBtn) {
+  installAppBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installAppBtn.hidden = true;
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  if (installAppBtn) installAppBtn.hidden = true;
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/PMGVC/service-worker.js', {scope: '/PMGVC/'}).catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
