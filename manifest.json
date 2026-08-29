@@ -1,0 +1,43 @@
+{
+  "id": "/PMGVC/",
+  "name": "PMGVC Gold Valuation Calculator",
+  "short_name": "PMGVC",
+  "description": "Gold Valuation Calculator for weight, valuation, schemes, ROI and monthly interest.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "start_url": "/PMGVC/",
+  "scope": "/PMGVC/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#f2eee4",
+  "theme_color": "#c9a227",
+  "prefer_related_applications": false,
+  "categories": ["finance", "utilities"],
+  "icons": [
+    {
+      "src": "/PMGVC/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/PMGVC/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/PMGVC/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/PMGVC/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

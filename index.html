@@ -1063,9 +1063,31 @@ td.calc18{
   <meta name="theme-color" content="#c9a227">
   <meta name="background-color" content="#f2eee4">
   <meta name="description" content="Gold Valuation Calculator for gold weight, valuation, schemes, ROI and monthly interest.">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+
+<style>
+.installAppBtn{
+  margin:12px auto 0;
+  min-height:40px;
+  padding:9px 18px;
+  border:1px solid #a47b08;
+  border-radius:10px;
+  background:linear-gradient(145deg,#fffdf0,#e9d27c);
+  color:#5f4905;
+  font-family:inherit;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.06em;
+  cursor:pointer;
+  box-shadow:0 6px 15px rgba(91,68,0,.14);
+}
+.installAppBtn:hover{transform:translateY(-1px)}
+.installAppBtn[hidden]{display:none!important}
+@media(max-width:700px){.installAppBtn{min-height:34px;padding:7px 13px;font-size:9px;margin-top:8px}}
+</style>
 
 </head>
 <body>
@@ -1140,6 +1162,7 @@ td.calc18{
 <main class="app">
   <header class="hero">
     <h1><span>◆ GOLD</span> VALUATION CALCULATOR <span>◆</span></h1>
+    <button type="button" class="installAppBtn" id="installAppBtn" hidden>INSTALL APP</button>
   </header>
 <button type="button" class="calcInfoBtn" id="calcInfoBtn" aria-label="How to use calculator" aria-controls="calcInfoModal" aria-expanded="false">i</button>
 <div class="calcInfoModal" id="calcInfoModal" hidden role="dialog" aria-modal="true" aria-labelledby="calcInfoTitle">
@@ -1541,9 +1564,35 @@ document.querySelectorAll('.roiInput').forEach(input=>{
 
 
 <script>
+// PWA install support for Chrome. The button appears only when Chrome
+// has determined that this page is installable.
+let deferredInstallPrompt = null;
+const installAppBtn = document.getElementById('installAppBtn');
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  if (installAppBtn) installAppBtn.hidden = false;
+});
+
+if (installAppBtn) {
+  installAppBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installAppBtn.hidden = true;
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  if (installAppBtn) installAppBtn.hidden = true;
+});
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+    navigator.serviceWorker.register('./service-worker.js', {scope: './'}).catch(() => {});
   });
 }
 </script>

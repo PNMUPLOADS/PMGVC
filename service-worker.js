@@ -1,12 +1,13 @@
-const CACHE_NAME = "gold-valuation-calculator-v1";
+const CACHE_NAME = "pmgvc-gold-calculator-v2";
+const BASE = "/PMGVC/";
 const APP_SHELL = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./gold-calculator-logo.jpg",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/favicon-32.png"
+  BASE,
+  BASE + "index.html",
+  BASE + "manifest.json",
+  BASE + "gold-calculator-logo.jpg",
+  BASE + "icons/icon-192.png",
+  BASE + "icons/icon-512.png",
+  BASE + "icons/favicon-32.png"
 ];
 
 self.addEventListener("install", event => {
@@ -20,21 +21,29 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      )
     ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
+
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
         return response;
-      }).catch(() => caches.match("./index.html"));
+      }).catch(() => caches.match(BASE + "index.html"));
     })
   );
 });
