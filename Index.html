@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+<meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gold Valuation Calculator</title>
   <style>
@@ -27,7 +27,7 @@ th:first-child{border-radius:11px 0 0 0}th:last-child{border-radius:0 11px 0 0}
 td{padding:5px;background:#fff;border-bottom:1px solid var(--line);text-align:center}
 input{font-family:inherit}
 .tableInput,.currencyInput input,.roiInput{width:100%;border:1px solid #d8d1bb;border-radius:9px;background:#fcfcfa;outline:none;color:var(--ink);font-weight:700}
-.tableInput{height:34px;padding:5px 7px;text-align:center}
+.tableInput{height:34px;padding:5px 7px;text-align:right}
 .tableInput:focus,.currencyInput:focus-within,.percentInput:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.12)}
 .calc{font-weight:800;font-size:13px}.k22{color:#07934b}.k18{color:#009bc5}
 .summaryRow{display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);gap:10px;margin-top:8px;align-items:center}
@@ -1146,28 +1146,6 @@ td.calc18{
 #grossWeight input:not([readonly]):not([disabled]),
 .grossWeight input:not([readonly]):not([disabled]) { text-align: center !important; }
 </style>
-
-<style>
-/* TOTAL NET WEIGHT — larger text and matching result-box color */
-.tableTotalCell .total span{
-  font-size:clamp(16px,1.5vw,21px) !important;
-  font-weight:800 !important;
-  color:#8a6910 !important;
-  letter-spacing:.04em;
-  line-height:1.15;
-  white-space:nowrap;
-}
-.tableTotalCell .total strong{
-  font-size:clamp(20px,2.5vw,30px) !important;
-  font-weight:800 !important;
-  color:#8a6910 !important;
-  white-space:nowrap;
-}
-@media(max-width:700px){
-  .tableTotalCell .total span{font-size:11px !important}
-  .tableTotalCell .total strong{font-size:16px !important}
-}
-</style>
 </head>
 <body>
 
@@ -1670,8 +1648,11 @@ window.addEventListener('appinstalled', () => {
 });
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/PMGVC/service-worker.js', {scope: '/PMGVC/'}).catch(() => {});
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('/PMGVC/service-worker.js', {scope: '/PMGVC/'});
+      await registration.update();
+    } catch (e) {}
   });
 }
 </script>
